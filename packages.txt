@@ -1,4 +1,5 @@
 software-properties-common
 gcc
 g++
---only-upgrade libstdc++6
+libc6
+libstdc++6
