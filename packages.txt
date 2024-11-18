@@ -1,9 +1,5 @@
-sudo apt update
-
-sudo apt install -y libasan8
-
-sudo apt install -y software-properties-common
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-sudo apt install -y gcc g++
-sudo apt-get install --only-upgrade libstdc++6
-
+libasan8
+software-properties-common
+gcc
+g++
+--only-upgrade libstdc++6
