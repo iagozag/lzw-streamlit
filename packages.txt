@@ -1,4 +1,3 @@
-libasan8
 software-properties-common
 gcc
 g++
