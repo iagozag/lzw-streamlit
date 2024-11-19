@@ -3,6 +3,4 @@ software-properties-common
 gcc
 g++
 libc6
-libc10
 libstdc++6
-libstdc++10
