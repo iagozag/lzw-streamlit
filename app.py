@@ -67,8 +67,7 @@ def run_compression(file_path, max_bits, fixed, stats, decompress):
 
     # Verificar o resultado
     if process.returncode == 0:
-      if(stats):
-        return output_path, stats_file
+      return output_path, stats_file if stats else None
     else:
         st.error(f"Error executing command: {' '.join(command)}")
         st.error(process.stderr.decode())
