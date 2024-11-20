@@ -32,7 +32,6 @@ def run_compression(file_path, max_bits, fixed, stats, decompress):
         output_file = output_file[:-4]
     else:
         output_file += ".lzw"
-    
 
     if not os.path.exists(INPUT_DIR):
         os.makedirs(INPUT_DIR)
@@ -44,7 +43,7 @@ def run_compression(file_path, max_bits, fixed, stats, decompress):
         os.makedirs(STATS_DIR)
 
     output_path = os.path.join(INPUT_DIR, output_file) if decompress else os.path.join(OUTPUT_DIR, output_file)
-    stats_file = os.path.join(STATS_DIR, (file_path[8:] if decompress else file_path[7:])+".stats")
+    stats_file = os.path.join(STATS_DIR, (file_path[8:] if decompress else file_path[7:]) + ".stats")
 
     # Construir o comando
     command = [EXECUTABLE]
@@ -67,14 +66,21 @@ def run_compression(file_path, max_bits, fixed, stats, decompress):
 
     # Verificar o resultado
     if process.returncode == 0:
-      return output_path, stats_file if stats else None
+        return output_path, stats_file if stats else None
     else:
         st.error(f"Error executing command: {' '.join(command)}")
         st.error(process.stderr.decode())
         return None, None
 
+
 # Interface do Streamlit
 st.title("File Compression / Decompression")
+
+# Inicializar o estado da sessão
+if "output_path" not in st.session_state:
+    st.session_state.output_path = None
+if "stats_file" not in st.session_state:
+    st.session_state.stats_file = None
 
 # Escolher a operação
 operation = st.selectbox("Choose operation:", ["Compression", "Decompression"])
@@ -97,24 +103,28 @@ if st.button("Run"):
         # Executar o processo
         output_path, stats_file = run_compression(file_path, max_bits, fixed, stats, decompress)
 
-        if output_path:
-            # Disponibilizar para download
-            with open(output_path, "rb") as f:
-                st.download_button(
-                    label="Download file",
-                    data=f,
-                    file_name=os.path.basename(output_path),
-                    mime="application/octet-stream"
-                )
-            st.success("Process completed successfully!")
+        # Atualizar o estado da sessão
+        st.session_state.output_path = output_path
+        st.session_state.stats_file = stats_file
 
-        if stats:
-            stats_data = ""
-            with open(stats_file, "r") as sf:
-                stats_data = sf.read().replace("\n", "<br>")
-                st.markdown(
-                    f"<div style='border: 1px solid #ddd; padding: 10px; border-radius: 5px; white-space: pre-wrap;'>{stats_data}</div>",
-                    unsafe_allow_html=True
-                )
+        st.success("Process completed successfully!")
     else:
         st.warning("Please, upload a file.")
+
+# Exibir o botão de download e estatísticas se os dados estiverem disponíveis
+if st.session_state.output_path:
+    with open(st.session_state.output_path, "rb") as f:
+        st.download_button(
+            label="Download file",
+            data=f,
+            file_name=os.path.basename(st.session_state.output_path),
+            mime="application/octet-stream"
+        )
+
+if stats and st.session_state.stats_file:
+    with open(st.session_state.stats_file, "r") as sf:
+        stats_data = sf.read().replace("\n", "<br>")
+        st.markdown(
+            f"<div style='border: 1px solid #ddd; padding: 10px; border-radius: 5px; white-space: pre-wrap;'>{stats_data}</div>",
+            unsafe_allow_html=True
+        )
